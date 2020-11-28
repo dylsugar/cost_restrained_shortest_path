@@ -73,7 +73,93 @@ class Graph():
             l.append(v)
             dest = v
         return l
-         
+
+
+    def cost_option_algorithm(self, Source, Dest, Budget):
+        start = Source
+        P = [] # each vertice with trade off curve
+        vertex_cost_find = dict()
+        heap = []
+        neighbors = set()
+        cost = 0
+        time = 0
+        c = 0
+        heap.append((Source, Source, cost, time))
+        P.append((cost, time, Source,Source))
+        print("------------PART ONE BELOW----------------")
+        while heap:
+            self.addVertex(Source)
+            heap = self.poppedHeap(heap,Source)
+            out_edges = []
+            future_list = []
+            for e in self.edges[Source]:
+                out_edges.append(e)
+            for o in out_edges:
+                tmp_cost = int(self.cost[(Source,o)]) + cost
+                t = int(self.cost[(Source,o)])
+                tmp_time = int(self.time[(Source,o)]) + time
+                c = int(self.time[(Source,o)])
+                fp = True
+                cp = True
+                if Source != start:
+                    if len(out_edges) > 2:
+                        for x in out_edges:
+                            if o != x:
+                                if o in self.edges[x]:
+                                    fp = True
+                                    break
+                                else:
+                                   fp = False
+                if fp == True:
+                    heap.append((Source, o, tmp_cost, tmp_time))
+                P.append((tmp_cost,tmp_time, Source, o))
+            min_neighbor = 0
+            min_cost = "INF"
+            min_time = 0
+            for h in heap:
+                if min_cost == "INF":
+                    min_neighbor = h[1]
+                    min_cost = h[2]
+                    min_time = h[3]
+                elif min_cost > h[2]:
+                    min_neighbor = h[1]
+                    min_cost = h[2]
+                    min_time = h[3]
+                elif min_cost == h[2]:
+                    if min_time > h[3]:
+                        min_neighbor = h[1]
+                        min_cost = h[2]
+                        min_time = h[3]
+            
+            Source = min_neighbor
+            cost = min_cost
+            time = min_time
+        print("Adjacency: ")
+        for i in range(len(self.vertices)+1):
+            print("P["+ str(i) +"] = ", end = "")
+            for y in P:
+                if int(y[3]) == int(i):
+                    print("<("+str(y[0])+","+str(y[1])+"),"+str(y[2]), end = "")
+            print("\n")
+        print("Shortest Path sth like: ")
+        for i in range(len(self.vertices)+1):
+           print("P["+ str(i) +"] = ", end = "")
+           for x in P:
+               if int(x[3]) == int(i):
+                print("<("+str(x[0])+","+str(x[1])+"),"+str(x[3])+" >  ", end = "")
+           print("\n")
+        print("----------------PART TWO BELOW----------------------")
+        for x in P:
+            if x[3] == Dest:
+                print("Cost: " + str(x[0]) + " Traversal Time: " + str(x[1]))
+        dapath = self.pathFinder(P,Dest,start,list())
+        for d in reversed(dapath):
+            print(" --> " + str(d),end='')
+        print("\n")
+
+
+
+
     def trip_algorithm(self, Source, Dest, Budget):
         heap = []
         start = Source
@@ -86,19 +172,21 @@ class Graph():
         time = 0
         heap.append((Source,Source,cost,time))
         print("------------------------------------------")
+        print("HEAP : From To Cost Time ")
         while heap:
+            print(Source)
+            #print(heap)
             P.append((cost,time,Source))
             heap = self.poppedHeap(heap,Source)
             out_edges = []
             count = 0
-            
             for e in self.edges[Source]: 
-                if e not in visited and self.inHeap(heap,e):
-                    c_cost, c_time = self.getCostime(heap,e)
-                    P.append((c_cost, c_time, e))
-                    path.append((c_cost,c_time,Source,e))
-                if e not in visited:
-                    out_edges.append((Source, e))
+                #if self.inHeap(heap,e):
+                #    c_cost, c_time = self.getCostime(heap,e)
+                #    P.append((c_cost, c_time, e))
+                #    path.append((c_cost,c_time,Source,e))
+                #else:
+                out_edges.append((Source, e))
             # Heap ( From , To, Cost, Time ) format
             for x in out_edges:
                 this_cost = int(self.cost[(x[0],x[1])]) + cost
@@ -129,6 +217,9 @@ class Graph():
             cost = min_cost
             Source = min_vertex
             visited.append(Source)
+            if c == 20:
+                break
+            c += 1
         P = self.dupCheck(P)
         print("FORMAT : (Cost, Time, Vertex)\n")
         print("Increasing Cost: ")
@@ -182,7 +273,7 @@ def main(argv):
         print(y[0] + " -- to --> " + y[1] + " with Cost: "+y[2] + " and Time: " + y[3])
         g.addEdge(y[0],y[1],y[2],y[3])
     
-    g.trip_algorithm(source,destination,budget)
+    g.cost_option_algorithm(source,destination,budget)
 
 
 if __name__ == "__main__":
