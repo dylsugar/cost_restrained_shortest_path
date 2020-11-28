@@ -5,8 +5,8 @@ Instructions for Compilation:
 1) Must have Python3 installed
 2) Zipfile will contain cpath.py file (All code is in here)
 3) Typing the following below will execute the program:
-  
-    python3 cpath.py <any file> <Source Vertex> <Destination Vertex> <Budget>
+
+python3 cpath.py <any file> <Source Vertex> <Destination Vertex> <Budget>
   
                               or
     
