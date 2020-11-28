@@ -95,6 +95,7 @@ class Graph():
             for e in self.edges[Source]:
                 out_edges.append(e)
             for o in out_edges:
+
                 tmp_cost = int(self.cost[(Source,o)]) + cost
                 t = int(self.cost[(Source,o)])
                 tmp_time = int(self.time[(Source,o)]) + time
@@ -112,7 +113,8 @@ class Graph():
                                    fp = False
                 if fp == True:
                     heap.append((Source, o, tmp_cost, tmp_time))
-                P.append((tmp_cost,tmp_time, Source, o))
+                if int(tmp_cost) <= int(Budget):
+                    P.append((tmp_cost,tmp_time, Source, o))
             min_neighbor = 0
             min_cost = "INF"
             min_time = 0
