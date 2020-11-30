@@ -103,8 +103,13 @@ class Graph():
                     min_time = h[1]
                     min_out = h[2]
         return min_time
+
+
     def cost_option_algorithm(self, Src, Dest, Budget):
-        
+        """
+        Primary Algorithm that finds shortest paths based on Trade off curves
+        """
+
         #Trade off curves of options
         P = [[] for Null in range(7)]
 
