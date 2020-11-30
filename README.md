@@ -2,10 +2,10 @@ Team Members: Dylan Suga dsuga2@uic.edu
 
 Instructions for Compilation:
 
-~~~~Reference if doesn't compile~~~~~~~
+Reference if doesn't compile:
 - imported sys, getopt, and defaultdict(). There shouldn't be anything else 
 that would mess up the execution
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Steps:
 
 1) Must have Python3 installed
