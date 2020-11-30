@@ -6,12 +6,12 @@ from collections import defaultdict
 class Graph():
     def __init__(self):
         self.edges = defaultdict(list)  
-        self.vertices = set()
+        self.vertices = []
         self.cost = {}
         self.time = {}
 
     def addVertex(self,value):
-        self.vertices.add(value)
+        self.vertices.append(value)
 
     
     def addEdge(self, start_v, end_v, cost, time):
@@ -111,10 +111,10 @@ class Graph():
         """
 
         #Trade off curves of options
-        P = [[] for Null in range(7)]
+        P = [[] for Null in range(len(self.vertices))]
 
         #next adjacent paths for current vertex
-        Adj = [[] for Null in range(7)]
+        Adj = [[] for Null in range(len(self.vertices))]
 
         #holds previous vertex
         Path = []
@@ -180,6 +180,7 @@ def main(argv):
     print("Budget: " + budget)
     print("\n------------- Read Contents -----------------")
     edge_list = []
+    vertices = set()
     while True:
 
         line = f.readline()
@@ -195,6 +196,10 @@ def main(argv):
     for y in edge_list:
         print(y[0] + " -- to --> " + y[1] + " with Cost: "+y[2] + " and Time: " + y[3])
         g.addEdge(y[0],y[1],y[2],y[3])
+        vertices.add(y[0])
+        vertices.add(y[1])
+    for l in list(vertices):
+        g.addVertex(l)
     print("\n---------Part 1: Adjacency List-------------")
     print("FORMAT: (Cost, Time, Vertex)\n\n")
     p, path, adj = g.cost_option_algorithm(source,destination,budget)
