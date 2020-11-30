@@ -34,8 +34,9 @@ class Graph():
     def poppedHeap(self,heap,vertex):
         c = 0
         for x in heap:
-            if x[1] == vertex:
+            if x == vertex:
                 heap.pop(c)
+                break
             c+=1
         return heap
 
@@ -43,50 +44,106 @@ class Graph():
         return [x for x in (set(tuple(i) for i in P))]
     
     def pathFinder(self,path,dest,start,l):
-        c = 0 
-        l.append(dest)
-        while dest != start:
-            tmp = []
-            count = 0
+        shortest_path = []
+        end = True
+        shortest_path.append(dest)
+        while end == True:
+            min_cost = "INF"
+            min_time = "INF"
+            min_in = "INF"
             for x in path:
-                if x[3] == dest:
-                    count +=1
-                    tmp.append((x[0],x[1],x[2]))
-            
-            c = "INF"
-            t = 0
-            v = 0
-            for y in tmp:
-                if c == "INF":
-                    c = y[0]
-                    t = y[1]
-                    v = y[2]
-                elif c > y[0]:
-                    c = y[0]
-                    t = y[1]
-                    v = y[2]
-                elif c == y[0]:
-                    if (int(start) - int(v)) < (int(start) - int(y[2])):
-                        v = y[2]
-                        c = y[0]
-                        t = y[1]
-            l.append(v)
-            dest = v
-        return l
+                if dest == x[3]:
+                    if min_cost == "INF":
+                        min_cost = x[0]
+                        min_time = x[1]
+                        min_in = x[2]
+                    elif min_cost > x[0]:
+                        min_cost = x[0]
+                        min_time = x[1]
+                        min_in = x[2]
+            dest = min_in
+            if min_in == start:
+                end = False
+            shortest_path.append(min_in)
+        return shortest_path
 
 
-    def cost_option_algorithm(self, Source, Dest, Budget):
-        start = Source
-        P = [] # each vertice with trade off curve
-        vertex_cost_find = dict()
+    def minValue(self, heap):
+        min_cost = "INF"
+        min_time = 0
+        min_out = 0
+        for h in heap:
+            if h:
+                if min_cost == "INF":
+                    min_cost = h[0]
+                    min_time = h[1]
+                    min_out = h[2]
+                elif min_cost > h[0]:
+                    min_cost = h[0]
+                    min_time = h[1]
+                    min_out = h[2]
+                elif min_cost == h[0]:
+                    if min_time > h[1]:
+                        min_cost = h[0]
+                        min_time = h[1]
+                        min_out = h[2]
+        return (min_cost, min_time, min_out)
+
+    def minTime(self, heap):
+        min_cost = 0
+        min_time = "INF"
+        min_out = 0
+        for h in heap:
+            if h:
+                if min_time == "INF":
+                    min_cost = h[0]
+                    min_time = h[1]
+                    min_out = h[2]
+                elif min_time > h[1]:
+                    min_cost = h[0]
+                    min_time = h[1]
+                    min_out = h[2]
+        return min_time
+    def cost_option_algorithm(self, Src, Dest, Budget):
+        
+        P = [[] for Null in range(7)]
+        Adj = [[] for Null in range(7)]
+        Path = []
         heap = []
-        neighbors = set()
         cost = 0
         time = 0
         c = 0
-        heap.append((Source, Source, cost, time))
-        P.append((cost, time, Source,Source))
+        Source = ((cost, time, Src))
+        heap.append(Source) # weight is cost basically
+        Path.append((cost, time, Src, Src))
         print("------------PART ONE BELOW----------------")
+        while heap:
+            heap = self.poppedHeap(heap,Source)
+            m = self.minValue(P[int(Source[2])])
+            cost = m[int(0)]
+            time = self.minTime(P[int(Source[2])])
+            if len(P[int(Source[2])]) == 0 or Source[0] < cost or Source[1] < time:
+                P[int(Source[2])].append(Source)
+            out_edges = []
+            for e in self.edges[Source[2]]:
+                out_edges.append(e)
+            for x in out_edges:
+                m_tmp = self.minValue(P[int(x)])
+                cost = m_tmp[0]
+                time = self.minTime(P[int(x)])
+                total_cost = int(Source[0]) + int(self.cost[Source[2], x])
+                total_time = int(Source[1]) + int(self.time[Source[2], x])
+                if len(P[int(x)]) == 0 or total_cost < cost or total_time < time:
+                    adj_insert = (total_cost - int(Source[0]), total_time - int(Source[1]), x)
+                    if adj_insert not in Adj[int(Source[2])]:
+                        Adj[int(Source[2])].append((adj_insert))
+                    heap.append((total_cost, total_time, x))
+                    Path.append((total_cost, total_time, Source[2], x))        
+            
+            Source = self.minValue(heap)
+        return P,Path,Adj 
+        
+        """      
         while heap:
             self.addVertex(Source)
             heap = self.poppedHeap(heap,Source)
@@ -158,7 +215,7 @@ class Graph():
         for d in reversed(dapath):
             print(" --> " + str(d),end='')
         print("\n")
-
+        """
 
 
 
@@ -275,7 +332,19 @@ def main(argv):
         print(y[0] + " -- to --> " + y[1] + " with Cost: "+y[2] + " and Time: " + y[3])
         g.addEdge(y[0],y[1],y[2],y[3])
     
-    g.cost_option_algorithm(source,destination,budget)
+    p, path, adj = g.cost_option_algorithm(source,destination,budget)
+    count = 0
+    for a in adj:
+        print("P[" + str(count) + "]  "+ str(a))
+        count+=1
+    count = 0
+    for i in p:
+        print("P[" + str(count) + "]  "+ str(i))
+        count+=1
+    shortest_path = g.pathFinder(path,destination,source,list())
+    for r in reversed(shortest_path):
+        print(" -> " + str(r),end='')
+    print("\n\n")
 
 
 if __name__ == "__main__":
